@@ -198,6 +198,13 @@ where
         Ok(())
     }
 
+    /// Returns the current read timeout if any
+    /// # Errors
+    /// In case of poisoned mutex
+    pub fn read_timeout(&self) -> io::Result<Option<Duration>> {
+        Ok(unwrap_poison(self.read_timeout.lock())?.as_ref().cloned())
+    }
+
     /// sets non-blocking mode for read.
     /// This has no effect on the underlying connection and purely deals with internal reading semantics.
     /// Calls to fns that read data will return `WouldBlock` immediately if no plain text data is available to be read.
@@ -218,6 +225,13 @@ where
     pub fn set_write_timeout(&self, timeout: Option<Duration>) -> io::Result<()> {
         *unwrap_poison(self.write_timeout.lock())? = timeout;
         Ok(())
+    }
+
+    /// Returns the current write timeout if any
+    /// # Errors
+    /// In case of poisoned mutex
+    pub fn write_timeout(&self) -> io::Result<Option<Duration>> {
+        Ok(unwrap_poison(self.write_timeout.lock())?.as_ref().cloned())
     }
 
     /// See `Read::read_to_end`
