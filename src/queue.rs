@@ -25,7 +25,6 @@ pub struct Queue {
 }
 
 impl Queue {
-    
     /// Kills the queue and terminates the connection.
     pub fn kill(&self) {
         self.dead.store(true, SeqCst);
@@ -81,11 +80,11 @@ impl Queue {
     /// Wait until at least 1 element can be popped.
     pub fn await_pop<T>(
         &self,
-        oguard: MutexGuard<'_, T>,
+        outer_guard: MutexGuard<'_, T>,
         duration: Option<Duration>,
     ) -> io::Result<()> {
         let mut guard = unwrap_poison(self.buffer.lock())?;
-        drop(oguard);
+        drop(outer_guard);
         while guard.is_empty() {
             if self.dead.load(SeqCst) {
                 return Err(io::Error::new(io::ErrorKind::BrokenPipe, "dead"));

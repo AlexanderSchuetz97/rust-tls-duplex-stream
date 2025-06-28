@@ -14,7 +14,6 @@ struct ReadPipeInner {
     error: OnceLock<ErrorKind>,
 }
 impl ReadPipeInner {
-    
     /// Background read handler thread loop.
     fn handle<T: Read + Send>(&self, mut read: T) {
         defer! {
@@ -44,7 +43,7 @@ impl ReadPipeInner {
     }
 }
 
-/// fake read impl that will pop from a queue and try to return immediately. 
+/// fake read impl that will pop from a queue and try to return immediately.
 /// Read are deferred to a background thread.
 #[derive(Debug)]
 pub struct ReadPipe {
@@ -65,7 +64,6 @@ impl Drop for ReadPipe {
 }
 
 impl ReadPipe {
-    
     /// Constructor that spawns the background thread.
     pub fn new<R: Read + Send + 'static, T: FnMut(Box<dyn FnOnce() + Send>) -> io::Result<()>>(
         write: R,

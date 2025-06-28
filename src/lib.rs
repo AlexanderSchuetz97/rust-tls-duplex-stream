@@ -74,7 +74,7 @@ where
     /// Either set a reasonable connection read timeout so that your Read will eventually return
     /// or call your connections shutdown fn like `TcpStream::shutdown` if such a method exists
     /// to ensure that all threads are stopped and no resources are leaked.
-    /// 
+    ///
     /// # Errors
     /// if `thread::Builder::new().spawn` fails to spawn 2 threads.
     ///
@@ -100,7 +100,7 @@ where
     /// Either set a reasonable connection read timeout so that your Read will eventually return
     /// or call your connections shutdown fn like `TcpStream::shutdown` if such a method exists
     /// to ensure that all threads are stopped and no resources are leaked.
-    /// 
+    ///
     /// # Errors
     /// propagated from the spawner fn.
     ///
@@ -162,7 +162,7 @@ where
                 Ok(count) => {
                     drop(guard);
                     Ok(count)
-                },
+                }
                 Err(err) => {
                     if self.non_blocking_read.load(SeqCst) {
                         return Err(err);
@@ -177,7 +177,7 @@ where
                         self.read_q.await_pop(guard, timeout_copy)?;
                         continue;
                     }
-                    
+
                     drop(guard);
                     Err(err)
                 }
@@ -185,14 +185,14 @@ where
         }
     }
 
-    /// sets the timeout for the writing operation. 
+    /// sets the timeout for the writing operation.
     /// This has no effect on the underlying connection and purely deals with internal writing semantics.
-    /// Calls to fns that writs data will return `TimedOut` if no plain text data could be written. 
+    /// Calls to fns that writs data will return `TimedOut` if no plain text data could be written.
     /// Cause of this is likely to be that the underlying connection does not read data fast enough.
     /// This is never caused by writing too much data.
     /// # Errors
     /// In case of poisoned mutex
-    /// 
+    ///
     pub fn set_read_timeout(&self, timeout: Option<Duration>) -> io::Result<()> {
         *unwrap_poison(self.read_timeout.lock())? = timeout;
         Ok(())
@@ -202,7 +202,7 @@ where
     /// # Errors
     /// In case of poisoned mutex
     pub fn read_timeout(&self) -> io::Result<Option<Duration>> {
-        Ok(unwrap_poison(self.read_timeout.lock())?.as_ref().cloned())
+        Ok(unwrap_poison(self.read_timeout.lock())?.as_ref().copied())
     }
 
     /// sets non-blocking mode for read.
@@ -215,9 +215,9 @@ where
         Ok(())
     }
 
-    /// sets the timeout for the writing operation. 
+    /// sets the timeout for the writing operation.
     /// This has no effect on the underlying connection and purely deals with internal writing semantics.
-    /// Calls to fns that writs data will return `TimedOut` if no plain text data could be written. 
+    /// Calls to fns that writs data will return `TimedOut` if no plain text data could be written.
     /// Cause of this is likely to be that the underlying connection does not send data fast enough.
     /// This is never caused by reading too much data.
     /// # Errors
@@ -231,7 +231,7 @@ where
     /// # Errors
     /// In case of poisoned mutex
     pub fn write_timeout(&self) -> io::Result<Option<Duration>> {
-        Ok(unwrap_poison(self.write_timeout.lock())?.as_ref().cloned())
+        Ok(unwrap_poison(self.write_timeout.lock())?.as_ref().copied())
     }
 
     /// See `Read::read_to_end`
@@ -286,7 +286,7 @@ where
     S: rustls::SideData,
 {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        RustTlsDuplexStream::read(self, buf)
+        RustTlsDuplexStream::<C, S>::read(self, buf)
     }
 }
 
@@ -310,21 +310,20 @@ where
     S: rustls::SideData,
 {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        RustTlsDuplexStream::write(self, buf)
+        RustTlsDuplexStream::<C, S>::write(self, buf)
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        RustTlsDuplexStream::flush(self)
+        RustTlsDuplexStream::<C, S>::flush(self)
     }
 }
 
-/// Read+Write combiner that is fed into rust-tls and delegates to our special ReadPipe/WritePipe 
+/// Read+Write combiner that is fed into rust-tls and delegates to our special ReadPipe/WritePipe
 /// that have careful blocking semantics
 #[derive(Debug)]
 struct CombinedPipe(ReadPipe, WritePipe);
 
 impl CombinedPipe {
-    
     ///Constructor for `CombinedPipe`
     pub fn new<
         R: Read + Send + 'static,
@@ -357,7 +356,6 @@ impl Write for CombinedPipe {
         self.1.flush()
     }
 }
-
 
 /// Poison error to `io::Error`
 pub(crate) fn unwrap_poison<T>(result: LockResult<T>) -> io::Result<T> {

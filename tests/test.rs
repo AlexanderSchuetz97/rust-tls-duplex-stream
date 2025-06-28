@@ -1,3 +1,4 @@
+use rust_tls_duplex_stream::RustTlsDuplexStream;
 use rustls::client::danger::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier};
 use rustls::pki_types::{CertificateDer, ServerName, UnixTime};
 use rustls::{DigitallySignedStruct, Error, SignatureScheme};
@@ -5,7 +6,6 @@ use std::io;
 use std::io::Write;
 use std::sync::Arc;
 use std::time::Instant;
-use rust_tls_duplex_stream::RustTlsDuplexStream;
 
 #[derive(Debug)]
 pub struct VeryGoodVerifier();
@@ -61,6 +61,10 @@ impl ServerCertVerifier for VeryGoodVerifier {
 
 #[test]
 fn main_client() {
+    rustls_graviola::default_provider()
+        .install_default()
+        .unwrap();
+
     let socket = std::net::TcpStream::connect("browserleaks.com:443").unwrap();
     let config = Arc::new(
         rustls::ClientConfig::builder()

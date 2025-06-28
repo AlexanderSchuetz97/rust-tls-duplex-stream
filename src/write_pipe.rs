@@ -15,7 +15,6 @@ struct WritePipeInner {
 }
 
 impl WritePipeInner {
-
     /// Background write handler thread loop.
     fn handle<T: Write + Send>(&self, mut write: T) {
         defer! {
@@ -39,8 +38,7 @@ impl WritePipeInner {
     }
 }
 
-
-/// fake write impl that will push to a queue and try to return immediately. 
+/// fake write impl that will push to a queue and try to return immediately.
 /// Writes are deferred to a background thread.
 #[derive(Debug)]
 pub struct WritePipe(Arc<WritePipeInner>);

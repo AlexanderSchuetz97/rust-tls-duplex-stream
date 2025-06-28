@@ -5,8 +5,8 @@ Full duplex stream wrapper around rust-tls
 The Stream wrappers from rust-tls by default are not full duplex.
 Reads/Writes will block each other. 
 While it's not possible with rust tls to achieve true full duplex,
-this crate will at least get rid of the io half duplex limit by delegating the actual io to a background thread
-and ensuring that a read that causes a write (of tls control data) 
+this crate will at least get rid of the io half-duplex limit by delegating the actual io to a background thread.
+This ensures that a read that causes a write (of tls control data) 
 will get priority over an ordinary write and vice verse.
 
 ## Caveats
@@ -15,8 +15,8 @@ The programs I make operates in an environment that is secure (mostly air gapped
 only reason why I even need tls in the first place is because of compliance requirements set by technically illiterate people.
 It is my opinion that the applications I make would be just as secure if I used plaintext communication.
 
-If your use-case actually requires "true" security then please audit this crate before using it. 
-I lack the skills required to do so, and it's not required for my use cases. It's however
+If your use-case actually requires "true" security, then please audit this crate before using it. 
+I lack the skills required to do so, and it's not required for my use cases. It's however, 
 extremely unlikely that this crate will hold up under any such scrutiny.
 
 As should be obvious with anything with version 0.1.0, this crate is still relatively experimental.
@@ -27,6 +27,7 @@ Only use this crate if you accept these caveats.
 ```rust
 #[test]
 fn main_client() {
+    //See test.rs for a full example.
     let client_config: rusttls::ClientConfig = ...;
     let config = Arc::new(client_config);
     
